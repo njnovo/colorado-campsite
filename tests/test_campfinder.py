@@ -345,7 +345,7 @@ class ClosedMonthTest(unittest.TestCase):
         conn = memory_db()
         cg_id = store.upsert_campground(conn, make_campground())
         job = scheduler.Job("recgov", cg_id, "cg1", date(2027, 2, 1), "hot", None)
-        with mock.patch.dict(scheduler.AVAILABILITY_ADAPTERS, {"recgov": lambda *_: (200, {})}):
+        with mock.patch.dict(scheduler.AVAILABILITY_ADAPTERS, {"recgov": lambda *_: (200, {"t1": {}})}):
             self.assertTrue(scheduler.run_job(conn, job))
         rows = conn.execute("SELECT status, COUNT(*), MIN(date), MAX(date) FROM availability GROUP BY status").fetchall()
         self.assertEqual([tuple(r) for r in rows], [("closed", 2 * 28, "2027-02-01", "2027-02-28")])

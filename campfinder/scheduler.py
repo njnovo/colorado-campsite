@@ -102,7 +102,8 @@ def run_job(conn, job):
     ok, error, status = 0, None, None
     try:
         status, availability = AVAILABILITY_ADAPTERS[job.source](job.source_id, job.month)
-        if not availability:  # Recreation.gov returns no sites for months a campground is closed
+        # For months a campground is closed, Recreation.gov returns sites with no dates
+        if not any(availability.values()):
             availability = closed_for_month(conn, job.campground_id, job.month)
         rows, changes = save_availability(conn, job.campground_id, availability)
         ok = 1
