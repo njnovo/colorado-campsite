@@ -1,0 +1,17 @@
+{
+  "FacilityID": "232463",
+  "FacilityName": "MORAINE PARK CAMPGROUND",
+  "FacilityTypeDescription": "Campground",
+  "FacilityDescription": "<h2>Overview</h2><p>Moraine Park sits at 8,160 ft &amp; is open year-round.</p>",
+  "FacilityLatitude": 40.3598,
+  "FacilityLongitude": -105.5986,
+  "Reservable": true,
+  "Enabled": true,
+  "ORGANIZATION": [{"OrgName": "National Park Service", "OrgAbbrevName": "NPS"}],
+  "ACTIVITY": [{"ActivityName": "CAMPING"}, {"ActivityName": "HIKING"}],
+  "MEDIA": [
+    {"MediaType": "Image", "URL": "https://example.test/b.jpg", "Title": "Loop B", "IsPrimary": false},
+    {"MediaType": "Image", "URL": "https://example.test/a.jpg", "Title": "Entrance", "IsPrimary": true},
+    {"MediaType": "Video", "URL": "https://example.test/v.mp4", "Title": "Tour", "IsPrimary": false}
+  ]
+}

@@ -1,0 +1,56 @@
+name,park_or_area,operator,booking_system,booking_url,source_id,nearest_town,lat,lng,camping_type,reservable,notes,verified
+Arkansas Headwaters Recreation Area,Arkansas Headwaters Recreation Area,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Salida,38.65,-106.07,developed,yes,"Several campgrounds along the river (e.g. Hecla Junction, Ruby Mountain, Rincon, Railroad Bridge)",no
+Bonny Lake State Park,Bonny Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Burlington,39.62,-102.18,developed,yes,Reservoir largely drained; check which campgrounds are open,no
+Boyd Lake State Park,Boyd Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Loveland,40.43,-105.04,developed,yes,,no
+Chatfield State Park,Chatfield State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Littleton,39.53,-105.07,developed,yes,,no
+Cherry Creek State Park,Cherry Creek State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Aurora,39.63,-104.83,developed,yes,,no
+Cheyenne Mountain State Park,Cheyenne Mountain State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Colorado Springs,38.73,-104.82,developed,yes,,no
+Crawford State Park,Crawford State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Crawford,38.68,-107.6,developed,yes,,no
+Eleven Mile State Park,Eleven Mile State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Lake George,38.94,-105.5,developed,yes,,no
+Elkhead Reservoir State Park,Elkhead Reservoir State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Craig,40.56,-107.38,developed,yes,,no
+Fishers Peak State Park,Fishers Peak State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Trinidad,37.1,-104.45,backcountry,yes,Newer park; confirm whether camping is open,no
+Golden Gate Canyon State Park,Golden Gate Canyon State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Golden,39.84,-105.41,developed,yes,"Reverend's Ridge, Aspen Meadows, plus backcountry sites",no
+Highline Lake State Park,Highline Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Loma,39.27,-108.84,developed,yes,,no
+Jackson Lake State Park,Jackson Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Orchard,40.38,-104.09,developed,yes,,no
+James M. Robb - Colorado River State Park,James M. Robb - Colorado River State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Grand Junction,39.07,-108.47,developed,yes,"Multiple sections (e.g. Fruita, Island Acres)",no
+John Martin Reservoir State Park,John Martin Reservoir State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Hasty,38.07,-102.95,developed,yes,,no
+Lake Pueblo State Park,Lake Pueblo State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Pueblo,38.26,-104.73,developed,yes,,no
+Lathrop State Park,Lathrop State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Walsenburg,37.6,-104.83,developed,yes,,no
+Lory State Park,Lory State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Bellvue,40.59,-105.18,backcountry,yes,Backcountry sites only,no
+Mancos State Park,Mancos State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Mancos,37.4,-108.27,developed,yes,,no
+Mueller State Park,Mueller State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Divide,38.88,-105.18,developed,yes,,no
+Navajo State Park,Navajo State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Arboles,37.01,-107.41,developed,yes,,no
+North Sterling State Park,North Sterling State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Sterling,40.79,-103.27,developed,yes,,no
+Paonia State Park,Paonia State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Paonia,38.95,-107.35,primitive,yes,,no
+Pearl Lake State Park,Pearl Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Clark,40.79,-106.89,developed,yes,,no
+Ridgway State Park,Ridgway State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Ridgway,38.21,-107.73,developed,yes,,no
+Rifle Falls State Park,Rifle Falls State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Rifle,39.68,-107.7,developed,yes,,no
+Rifle Gap State Park,Rifle Gap State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Rifle,39.63,-107.76,developed,yes,,no
+St. Vrain State Park,St. Vrain State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Firestone,40.17,-104.99,developed,yes,,no
+Stagecoach State Park,Stagecoach State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Oak Creek,40.27,-106.86,developed,yes,,no
+State Forest State Park,State Forest State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,50042,Walden,40.55,-106.0,developed,yes,"Many campgrounds, cabins and yurts; cpwshop parkID 50042",no
+Staunton State Park,Staunton State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Pine,39.5,-105.38,developed,yes,,no
+Steamboat Lake State Park,Steamboat Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Clark,40.8,-106.95,developed,yes,,no
+Sylvan Lake State Park,Sylvan Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Eagle,39.48,-106.73,developed,yes,,no
+Trinidad Lake State Park,Trinidad Lake State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Trinidad,37.15,-104.57,developed,yes,,no
+Vega State Park,Vega State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Collbran,39.22,-107.8,developed,yes,,no
+Yampa River State Park,Yampa River State Park,Colorado Parks & Wildlife,cpwshop (Aspira),https://www.cpwshop.com/campinghome.page,,Hayden,40.49,-107.31,developed,yes,,no
+Sweetwater Campground,Sweetwater Lake State Park,CPW with US Forest Service,recreation.gov,https://www.recreation.gov/camping/campgrounds/232715,232715,Gypsum,39.8,-107.16,developed,yes,"State park, but books on Recreation.gov; the federal script will also find it",no
+South Bay Campground,Horsetooth Reservoir,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.52,-105.15,developed,yes,,no
+Inlet Bay Campground,Horsetooth Reservoir,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.56,-105.16,developed,yes,Seasonal closures,no
+Carter Knolls Campground,Carter Lake,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.34,-105.2,developed,yes,,no
+Eagle Campground,Carter Lake,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.35,-105.21,developed,yes,Construction on main road,no
+Sky View Campground,Carter Lake,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.33,-105.2,developed,yes,,no
+South Shore Campground,Carter Lake,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.31,-105.21,developed,yes,,no
+North Pines Campground,Carter Lake,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.36,-105.21,developed,no,Closed until further notice,no
+Big Thompson Campground,Carter Lake,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.36,-105.22,developed,no,Converted to day-use parking; no camping,no
+Flatiron Campground,Flatiron Reservoir,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.36,-105.23,developed,yes,,no
+Pinewood Campground,Pinewood Reservoir,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.37,-105.29,developed,yes,,no
+Hermit's Hollow (campground #1),Hermit Park Open Space,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.35,-105.46,developed,yes,,no
+Bobcat (campground #2),Hermit Park Open Space,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.35,-105.46,developed,yes,,no
+Kruger Equestrian (campground #3),Hermit Park Open Space,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.35,-105.47,equestrian,yes,,no
+Granite Gulch (campground #4),Hermit Park Open Space,Larimer County Natural Resources,larimercamping (Aspira),https://larimercamping.com,,Fort Collins / Loveland / Estes Park,40.34,-105.47,developed,yes,,no
+Sawmill Hiker Campground,White Ranch Park,Jefferson County Open Space,rec1 (Jeffco catalog),https://www.jeffco.us/1636/Reserve-a-Campsite,,Golden,39.82,-105.27,backcountry,yes,Tent-only; book 90 days to 24 h ahead; $12/night,no
+Sourdough Springs Campground,White Ranch Park,Jefferson County Open Space,rec1 (Jeffco catalog),https://www.jeffco.us/1636/Reserve-a-Campsite,,Golden,39.83,-105.28,backcountry,yes,Tent-only; closed Nov 1 - Mar 31,no
+Reynolds Park Campground,Reynolds Park,Jefferson County Open Space,rec1 (Jeffco catalog),https://www.jeffco.us/1636/Reserve-a-Campsite,,Conifer,39.46,-105.24,backcountry,yes,Tent-only; book 90 days to 24 h ahead; $12/night,no
+Chief Hosa Campground,Denver Mountain Parks,City and County of Denver,unknown - verify,https://denvergov.org/Government/Agencies-Departments-Offices/Agencies-Departments-Offices-Directory/Parks-Recreation/Urban-Parks-Trails/Chief-Hosa-Campground,,Golden,39.72,-105.36,developed,yes,Booking system not confirmed,no

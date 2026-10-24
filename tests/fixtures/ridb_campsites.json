@@ -1,0 +1,22 @@
+[
+  {"CampsiteID": "1001", "CampsiteName": "A001", "CampsiteType": "STANDARD NONELECTRIC", "TypeOfUse": "Overnight",
+   "Loop": "A", "CampsiteAccessible": false,
+   "ATTRIBUTES": [{"AttributeName": "Max Num of People", "AttributeValue": "8"},
+                  {"AttributeName": "Pets Allowed", "AttributeValue": "Yes"}],
+   "PERMITTEDEQUIPMENT": [{"EquipmentName": "Tent", "MaxLength": 0}, {"EquipmentName": "Trailer", "MaxLength": 30}]},
+  {"CampsiteID": "1002", "CampsiteName": "B010", "CampsiteType": "RV ELECTRIC", "TypeOfUse": "Overnight",
+   "Loop": "B", "CampsiteAccessible": true,
+   "ATTRIBUTES": [{"AttributeName": "Electricity Hookup", "AttributeValue": "30/50"},
+                  {"AttributeName": "Water Hookup", "AttributeValue": "Y"},
+                  {"AttributeName": "Sewer Hookup", "AttributeValue": "N"},
+                  {"AttributeName": "Driveway Length", "AttributeValue": "45"},
+                  {"AttributeName": "Pets Allowed", "AttributeValue": "No"}],
+   "PERMITTEDEQUIPMENT": []},
+  {"CampsiteID": "1003", "CampsiteName": "C001", "CampsiteType": "TENT ONLY NONELECTRIC", "TypeOfUse": "Overnight",
+   "Loop": "C", "CampsiteAccessible": false, "ATTRIBUTES": [], "PERMITTEDEQUIPMENT": [{"EquipmentName": "Tent", "MaxLength": 0}]},
+  {"CampsiteID": "1004", "CampsiteName": "HOST", "CampsiteType": "MANAGEMENT", "TypeOfUse": "Overnight",
+   "Loop": "A", "CampsiteAccessible": false, "ATTRIBUTES": [], "PERMITTEDEQUIPMENT": []},
+  {"CampsiteID": "1005", "CampsiteName": "D-GRP", "CampsiteType": "GROUP STANDARD NONELECTRIC", "TypeOfUse": "Overnight",
+   "Loop": "D", "CampsiteAccessible": false,
+   "ATTRIBUTES": [{"AttributeName": "Max Num of People", "AttributeValue": "40"}], "PERMITTEDEQUIPMENT": []}
+]

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Colorado Campsite Finder</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1><a href="/">Colorado Campsite Finder</a></h1>
+    <span class="freshness" id="freshness"></span>
+  </header>
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="layout">
+    <form class="filters" id="filters">
+      <fieldset>
+        <legend>Dates</legend>
+        <div class="row">
+          <label>Check-in <input type="date" name="start" required></label>
+          <label>Check-out <input type="date" name="end" required></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Where</legend>
+        <label>Near
+          <select name="near">
+            <option value="">Anywhere in Colorado</option>
+            <option value="39.7392,-104.9903">Denver</option>
+            <option value="40.0150,-105.2705">Boulder</option>
+            <option value="40.5853,-105.0844">Fort Collins</option>
+            <option value="38.8339,-104.8214">Colorado Springs</option>
+            <option value="39.0639,-108.5506">Grand Junction</option>
+            <option value="37.2753,-107.8801">Durango</option>
+            <option value="here">My location</option>
+          </select>
+        </label>
+        <label>Within (miles) <input type="number" name="radius" min="5" step="5" placeholder="any"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Site</legend>
+        <div class="checks">
+          <label class="check"><input type="checkbox" name="types" value="tent"> Tent</label>
+          <label class="check"><input type="checkbox" name="types" value="rv"> RV</label>
+          <label class="check"><input type="checkbox" name="types" value="cabin"> Cabin</label>
+          <label class="check"><input type="checkbox" name="types" value="yurt"> Yurt</label>
+          <label class="check"><input type="checkbox" name="types" value="group"> Group</label>
+          <label class="check"><input type="checkbox" name="types" value="equestrian"> Equestrian</label>
+        </div>
+        <label>RV length at least (ft) <input type="number" name="rv_length" min="10" step="1" placeholder="any"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Needs</legend>
+        <div class="checks">
+          <label class="check"><input type="checkbox" name="electric" value="1"> Electric</label>
+          <label class="check"><input type="checkbox" name="water" value="1"> Water</label>
+          <label class="check"><input type="checkbox" name="sewer" value="1"> Sewer</label>
+          <label class="check"><input type="checkbox" name="ada" value="1"> Accessible</label>
+          <label class="check"><input type="checkbox" name="pets" value="1"> Pets</label>
+          <label class="check"><input type="checkbox" name="fcfs" value="1"> First-come</label>
+        </div>
+        <label>Agency <select name="agency"><option value="">All agencies</option></select></label>
+      </fieldset>
+
+      <button class="primary" type="submit">Search</button>
+    </form>
+
+    <main>
+      <div id="map"></div>
+      <div class="results-head">
+        <span class="count" id="count"></span>
+        <label>Sort
+          <select id="sort">
+            <option value="distance">Distance</option>
+            <option value="availability">Availability</option>
+            <option value="price">Price</option>
+            <option value="name">Name</option>
+          </select>
+        </label>
+      </div>
+      <div class="legend">
+        <span><span class="dot open"></span>Open all nights</span>
+        <span><span class="dot partial"></span>Some nights</span>
+        <span><span class="dot full"></span>Full or closed</span>
+        <span><span class="dot unknown"></span>Not checked</span>
+        <span><span class="dot fcfs"></span>First-come only</span>
+      </div>
+      <ul class="results" id="results"></ul>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="/common.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

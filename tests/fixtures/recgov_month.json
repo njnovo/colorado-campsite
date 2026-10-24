@@ -1,0 +1,10 @@
+{
+  "campsites": {
+    "1001": {"campsite_id": "1001", "site": "A001", "loop": "A",
+             "availabilities": {"2027-07-01T00:00:00Z": "Available", "2027-07-02T00:00:00Z": "Reserved",
+                                "2027-07-03T00:00:00Z": "Not Reservable"}},
+    "1002": {"campsite_id": "1002", "site": "B010", "loop": "B",
+             "availabilities": {"2027-07-01T00:00:00Z": "Open", "2027-07-02T00:00:00Z": "Not Available",
+                                "2027-07-03T00:00:00Z": "Something New"}}
+  }
+}
