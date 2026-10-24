@@ -19,7 +19,6 @@ from . import config
 # Minimum seconds between requests, per source.
 SOURCE_INTERVALS = {
     "ridb": 1.0,
-    "recgov": 10.0,  # matches recreation.gov's robots.txt Crawl-delay
 }
 DEFAULT_INTERVAL = 5.0
 RETRY_STATUSES = {429, 500, 502, 503, 504}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Booking Calendar · Colorado Campsite Finder</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <h1><a href="/">Colorado Campsite Finder</a></h1>
+    <nav class="nav"><a href="/" data-nav="search">Find campgrounds</a><a href="/calendar.html" data-nav="calendar" aria-current="page">Booking calendar</a></nav>
+    <span class="freshness" id="freshness"></span>
+  </header>
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="cal-page">
+    <section class="cal-setup">
+      <div class="setup-block">
+        <h2>Your trip</h2>
+        <div class="segmented" role="radiogroup" aria-label="Trip dates">
+          <label><input type="radio" name="mode" value="dates" checked> Specific dates</label>
+          <label><input type="radio" name="mode" value="month"> Every weekend in a month</label>
+        </div>
+        <div class="trip-inputs" id="datesInputs">
+          <label>Check-in <input type="date" id="checkin"></label>
+          <label>Check-out <input type="date" id="checkout"></label>
+        </div>
+        <div class="trip-inputs" id="monthInputs" hidden>
+          <label>Month <input type="month" id="month"></label>
+          <span class="meta">Friday to Sunday, every weekend</span>
+        </div>
+      </div>
+      <div class="setup-block">
+        <h2>Campgrounds</h2>
+        <div class="chips" id="chips"></div>
+        <div class="picker">
+          <input type="search" id="find" placeholder="Add a campground, e.g. moraine" autocomplete="off"
+                 aria-label="Add a campground">
+          <ul class="suggestions" id="suggestions" hidden></ul>
+        </div>
+        <div class="quick">
+          <button type="button" class="link" id="addRmnp">+ Rocky Mountain NP campgrounds</button>
+          <button type="button" class="link" id="clearAll">Clear all</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="next-up" id="nextUp" hidden></section>
+
+    <section class="month-card">
+      <div class="month-head">
+        <button type="button" id="prevMonth" aria-label="Previous month">‹</button>
+        <h2 id="monthTitle"></h2>
+        <button type="button" id="nextMonth" aria-label="Next month">›</button>
+        <button type="button" id="jumpNext" class="link">Next booking day</button>
+        <button type="button" id="jumpTrip" class="link">Trip dates</button>
+        <a class="button" id="downloadAll" href="#" hidden>Add all to my calendar (.ics)</a>
+      </div>
+      <div class="month-grid" id="grid"></div>
+      <div class="cal-legend" id="legend"></div>
+    </section>
+
+    <section class="agenda-card">
+      <h2>All booking days</h2>
+      <div id="agenda"></div>
+    </section>
+  </div>
+
+  <script src="/common.js"></script>
+  <script src="/calendar.js"></script>
+</body>
+</html>

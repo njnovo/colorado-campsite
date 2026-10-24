@@ -1,8 +1,33 @@
 # Colorado Campsite Finder
 
-One search across Colorado's campground booking systems. See [PLAN.md](PLAN.md) for the full plan.
+Find Colorado campgrounds and know exactly when each one opens for booking. See [PLAN.md](PLAN.md) for the original plan
+and [PLANNER.md](PLANNER.md) for the booking-day planner (current direction).
 
-Status: **Phase 1 scaffold.** Pure Python 3.12 standard library + SQLite, nothing to install.
+Status: **Booking-day planner prototype.** Pure Python 3.12 standard library +
+SQLite, nothing to install.
+
+## Booking calendar
+
+`/calendar.html` (the **Booking calendar** link at the top). Pick your trip (specific dates, or every
+weekend in a month) and the campgrounds you want; it puts every booking day on a month grid with the
+time in Mountain Time, highlights your trip, counts down to the next booking day, and exports all of
+them as one `.ics`. Add campgrounds with **+ Booking calendar** on the search page, from a campground
+page, or by name on the calendar itself. The list is remembered in your browser and in the URL.
+
+## Booking-day planner
+
+Open any campground page, enter check-in/check-out, and click **When can I book?** You get the
+exact opening time in Mountain Time with a countdown, an **Add to calendar** `.ics` reminder
+(15 minutes before), and backups within 30 miles with their own opening times. Every time shows
+whether its rule was verified, and when.
+
+- Rules: `seed/booking_rules.csv` (one `*` default row per source, plus per-campground overrides).
+  Edit it and reload; the app re-reads it when the file changes. Only rows with a `verified_on` date
+  that match the campground itself count as verified.
+- Logic and edge cases (end-of-month, leap years, daylight saving, each-night vs arrival windows):
+  `campfinder/planner.py`, tests in `tests/test_planner.py`.
+- API: `GET /api/campgrounds/<id>/plan?checkin=&checkout=` and `.../plan.ics?checkin=&checkout=`;
+  `GET /api/booking-calendar?ids=1,2&checkin=&checkout=` (or `&month=YYYY-MM`) and `.../booking-calendar.ics`.
 
 ## Quick start
 
@@ -18,8 +43,6 @@ python3 manage.py import-ridb --limit 5 --no-grid   # quick test first
 python3 manage.py import-ridb                       # full run, takes a while (polite 1 req/sec)
 ```
 
-Want fake data with availability to try the UI? `python3 manage.py seed-demo` (remove with `--clear`).
-
 ## Commands
 
 | Command | What it does |
@@ -27,10 +50,9 @@ Want fake data with availability to try the UI? `python3 manage.py seed-demo` (r
 | `python3 manage.py serve` | Website + JSON API |
 | `python3 manage.py import-seed` | Load `seed/seed_campgrounds.csv` (re-run after editing it) |
 | `python3 manage.py import-ridb` | Import Colorado federal campgrounds + campsites from RIDB: `state=CO` pass plus a 50-mile radius grid so nothing is missed (weekly is plenty) |
-| `python3 manage.py watch add "moraine park"` | Add campgrounds to the watchlist (`remove`, `list`; `--all` for every match) |
-| `python3 manage.py poll [--loop]` | Check availability for watched campgrounds (`-v` before `poll` for logging) |
-| `python3 manage.py status` | Data counts and source health |
-| `python3 manage.py prune` | Delete availability for past dates |
+| `python3 manage.py plan "moraine park" 2027-08-14 2027-08-16` | When a stay opens, plus backups (`--month 2027-07` for every weekend) |
+| `python3 manage.py openings "moraine park" --days 7` | Nights opening for booking in the next N days |
+| `python3 manage.py status` | Data counts |
 | `python3 -m unittest discover -s tests` | Run tests |
 
 ## Seed data (`seed/`)
@@ -51,24 +73,17 @@ campfinder/
   adapters/base.py     normalized format every adapter outputs
   adapters/ridb.py     federal metadata (documented RIDB API)
   adapters/seed.py     hand-curated state/county/city list from seed/
-  adapters/recgov.py   Recreation.gov live availability (OFF by default, see below)
   fetch.py             polite HTTP: per-source rate limits, User-Agent, back-off
-  db.py                SQLite schema (PLAN.md §4)
-  store.py             writes adapter output, logs availability changes
-  scheduler.py         tiered polling (PLAN.md §5)
+  db.py                SQLite schema (campgrounds + campsites)
+  store.py             writes adapter output
+  planner.py           booking-day planner: opening times, backups, .ics export
   search.py            search + campground detail queries
   server.py            JSON API + static files
-  demo.py              fake demo data
-static/                search page (MapLibre map + list) and campground page
+static/                search page (map + list), campground page, booking calendar (calendar.html)
 ```
 
-## Recreation.gov availability: personal watchlist only
+## No availability data
 
-`https://www.recreation.gov/robots.txt` has `Disallow: /api/*` and `Crawl-delay: 10`
-(checked 2026-10-23). The availability endpoint (PLAN.md §3.1) is under `/api/`. Decision
-(2026-10-23): poll a small personal watchlist only, at 1 request / 10 s, `WATCH_DAYS` ahead.
-This goes against robots.txt, so Recreation.gov could block it; it is not OK for a public
-launch without sanctioned access. Turn it off with `RECGOV_AVAILABILITY_ENABLED=false`.
-
-At 10 s per request, each watched campground costs ~4 requests per round (one per month),
-so keep the list short (5 campgrounds = about 3-4 minutes per round).
+Live availability checking (Recreation.gov polling, the watchlist, demo data) was removed: it went
+against Recreation.gov's robots.txt and isn't part of the planner. The app only uses campground
+metadata plus the booking rules. Old `availability` tables are dropped from the database on startup.

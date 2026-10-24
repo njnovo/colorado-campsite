@@ -1,0 +1,11 @@
+source,source_id,window_type,window_amount,release_time,release_tz,basis,opens_on,notes,url,verified_on
+recgov,*,rolling_months,6,10:00,America/New_York,each_night,,"Most Recreation.gov campgrounds: rolling 6 months, new dates at 10:00 AM Eastern. Only third-party guides checked so far, not a Recreation.gov help page.",https://outdoorithm.com/booking/recreation-gov,
+recgov,232463,rolling_months,6,10:00,America/New_York,each_night,,"Moraine Park (RMNP). NPS: summer reservations open 6 months ahead; past releases at 8 a.m. MT. Summer 2027 dates 'TBD, check back mid-November'.",https://www.nps.gov/romo/planyourvisit/camping.htm,2026-10-24
+recgov,232462,rolling_months,6,10:00,America/New_York,each_night,,Glacier Basin (RMNP). NPS: summer reservations open 6 months ahead.,https://www.nps.gov/romo/planyourvisit/camping.htm,2026-10-24
+recgov,233187,rolling_months,6,10:00,America/New_York,each_night,,Aspenglen (RMNP). NPS: summer reservations open 6 months ahead.,https://www.nps.gov/romo/planyourvisit/camping.htm,2026-10-24
+recgov,260552,rolling_months,6,10:00,America/New_York,each_night,,Timber Creek (RMNP). NPS: summer reservations open 6 months ahead.,https://www.nps.gov/romo/planyourvisit/camping.htm,2026-10-24
+recgov,10317461,fcfs,,,,,,"Longs Peak (RMNP). NPS: 'the only first come, first-served campground in Rocky Mountain National Park'.",https://www.nps.gov/romo/planyourvisit/camping.htm,2026-10-24
+cpw,*,rolling_months,6,,America/Denver,arrival,,"CPW: up to six months before the arrival date, 'depending on the park's opening date'. Release time of day not published.",https://cpw.state.co.us/buyapply/Pages/ReservationPolicies.aspx,2026-10-24
+larimer,*,rolling_days,180,,America/Denver,arrival,,"Larimer County: 180 days to 1 day before arrival (Mar-Oct); stays may run past the window. Release time of day not published. Carter Lake construction may shorten windows.",https://www.larimer.gov/node/1489,2026-10-24
+jeffco,*,rolling_months,6,,America/Denver,arrival,,Jefferson County Open Space: window not checked yet.,,
+other,*,rolling_months,6,,America/Denver,arrival,,Window not checked yet.,,

@@ -6,10 +6,6 @@ objects; storage, search and the UI never see source-specific data.
 from dataclasses import dataclass, field
 
 
-class AdapterDisabled(Exception):
-    """Raised when an adapter is switched off by configuration."""
-
-
 class SchemaError(Exception):
     """The source returned data in a shape we don't recognise."""
 

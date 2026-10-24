@@ -1,6 +1,5 @@
 """Writes normalized adapter output into the database."""
 import json
-from datetime import timedelta
 
 from .adapters.base import Campground
 from .db import now_iso
@@ -64,61 +63,3 @@ def upsert_campground(conn, cg: Campground):
     conn.commit()
     return cg_id
 
-
-def month_dates(month_start):
-    day, dates = month_start.replace(day=1), []
-    while day.month == month_start.month:
-        dates.append(day.isoformat())
-        day += timedelta(days=1)
-    return dates
-
-
-def closed_for_month(conn, campground_id, month_start):
-    """Availability marking every site closed for the month (source returned no sites)."""
-    dates = month_dates(month_start)
-    return {
-        r[0]: dict.fromkeys(dates, "closed")
-        for r in conn.execute("SELECT source_id FROM campsites WHERE campground_id = ?", (campground_id,))
-    }
-
-
-def save_availability(conn, campground_id, site_availability, checked_at=None):
-    """Store {site source_id: {date: status}} and log status changes.
-
-    Returns (rows_written, changes_recorded). Sites we don't know (e.g. skipped
-    management sites) are ignored.
-    """
-    checked_at = checked_at or now_iso()
-    site_ids = dict(conn.execute(
-        "SELECT source_id, id FROM campsites WHERE campground_id = ?", (campground_id,)
-    ).fetchall())
-    rows = changes = 0
-    for source_id, dates in site_availability.items():
-        site_id = site_ids.get(str(source_id))
-        if site_id is None:
-            continue
-        previous = dict(conn.execute(
-            "SELECT date, status FROM availability WHERE campsite_id = ? AND date >= ? AND date <= ?",
-            (site_id, min(dates, default=""), max(dates, default="")),
-        ).fetchall())
-        for day, status in dates.items():
-            old = previous.get(day)
-            if old != status:
-                if old is not None:
-                    conn.execute(
-                        """INSERT INTO availability_events
-                               (campsite_id, date, old_status, new_status, detected_at)
-                           VALUES (?, ?, ?, ?, ?)""",
-                        (site_id, day, old, status, checked_at),
-                    )
-                    changes += 1
-            conn.execute(
-                """INSERT INTO availability (campsite_id, date, status, checked_at)
-                   VALUES (?, ?, ?, ?)
-                   ON CONFLICT(campsite_id, date) DO UPDATE SET
-                       status = excluded.status, checked_at = excluded.checked_at""",
-                (site_id, day, status, checked_at),
-            )
-            rows += 1
-    conn.commit()
-    return rows, changes

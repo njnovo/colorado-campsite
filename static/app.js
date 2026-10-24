@@ -1,4 +1,4 @@
-// Search page: filters -> /api/search -> map pins + list.
+// Search page: filters -> /api/search -> map pins + list, coloured by when booking opens.
 
 const form = document.getElementById("filters");
 const sortSelect = document.getElementById("sort");
@@ -9,8 +9,11 @@ let myLocation = null;
 
 const css = getComputedStyle(document.documentElement);
 const STATUS_COLOR = Object.fromEntries(
-  ["open", "partial", "full", "unknown", "fcfs"].map((s) => [s, css.getPropertyValue(`--${s}`).trim()])
+  ["upcoming", "open", "fcfs"].map((s) => [s, css.getPropertyValue(`--${s}`).trim()])
 );
+// booking status from the API -> dot/pin class
+const DOT = { upcoming: "upcoming", open: "open", lottery: "fcfs", no_reservations: "fcfs" };
+const DOT_LABEL = { upcoming: "Booking opens later", open: "Booking already open", fcfs: "No reservations" };
 
 const map = new maplibregl.Map({
   container: "map",
@@ -42,8 +45,7 @@ mapReady.then(() => {
     paint: {
       "circle-radius": 7,
       "circle-color": ["match", ["get", "status"],
-        "open", STATUS_COLOR.open, "partial", STATUS_COLOR.partial,
-        "full", STATUS_COLOR.full, "fcfs", STATUS_COLOR.fcfs, STATUS_COLOR.unknown],
+        "upcoming", STATUS_COLOR.upcoming, "open", STATUS_COLOR.open, STATUS_COLOR.fcfs],
       "circle-stroke-width": 1.5,
       "circle-stroke-color": "#ffffff",
     },
@@ -64,18 +66,28 @@ function detailUrl(cg) {
 }
 
 function summary(cg) {
-  if (cg.status === "open" || cg.status === "partial") {
-    const parts = [];
-    if (cg.open_sites) parts.push(`${cg.open_sites} site${cg.open_sites > 1 ? "s" : ""} open all nights`);
-    if (cg.partial_sites) parts.push(`${cg.partial_sites} partly open`);
-    return parts.join(", ");
-  }
-  return STATUS_LABEL[cg.status];
+  if (!cg.matching_sites) return "No site details";
+  return `${cg.matching_sites} matching site${cg.matching_sites > 1 ? "s" : ""}`;
+}
+
+function calendarButton(cg) {
+  if (cg.booking.status === "no_reservations") return "";
+  const added = savedIds().includes(cg.id);
+  return `<button type="button" class="link add-cal" data-id="${cg.id}"${added ? " disabled" : ""}>
+    ${added ? "✓ In booking calendar" : "+ Booking calendar"}</button>`;
+}
+
+function bookingLine(cg) {
+  const b = cg.booking;
+  if (!b || b.status === "no_reservations") return "";
+  if (b.status === "lottery") return `<span class="booking">Lottery</span>`;
+  if (b.status === "open") return `<span class="booking">Bookable now for these dates</span>`;
+  return `<span class="booking upcoming">Bookable ${esc(b.opens_at_text)}${b.verified ? "" : " (unverified)"}</span>`;
 }
 
 function popupHTML(cg) {
-  return `<strong>${esc(cg.name)}</strong><br>${esc(summary(cg))}<br>
-    <a href="${detailUrl(cg)}">Details &amp; site calendar →</a>`;
+  return `<strong>${esc(cg.name)}</strong><br>${bookingLine(cg)}<br>
+    <a href="${detailUrl(cg)}">Plan my booking →</a>`;
 }
 
 function highlight(id) {
@@ -91,14 +103,14 @@ function renderList(results) {
   }
   list.innerHTML = results.map((cg) => `
     <li data-id="${cg.id}">
-      <span class="dot ${cg.status}" title="${esc(STATUS_LABEL[cg.status])}"></span>
+      <span class="dot ${DOT[cg.booking.status]}" title="${esc(DOT_LABEL[DOT[cg.booking.status]])}"></span>
       <span><a class="name" href="${detailUrl(cg)}">${esc(cg.name)}</a></span>
       <span class="side">
         ${cg.distance_mi != null ? `${cg.distance_mi} mi<br>` : ""}
         ${cg.min_price != null ? `from $${cg.min_price.toFixed(0)}` : ""}
       </span>
       <span class="sub">${esc(cg.agency)} · ${esc(summary(cg))}
-        ${cg.last_checked ? ` · checked ${timeAgo(cg.last_checked)}` : ""}</span>
+        <br>${bookingLine(cg)} ${calendarButton(cg)}</span>
     </li>`).join("");
 }
 
@@ -107,7 +119,7 @@ async function renderMap(results) {
   const features = results.filter((r) => r.lat != null && r.lng != null).map((r) => ({
     type: "Feature",
     geometry: { type: "Point", coordinates: [r.lng, r.lat] },
-    properties: { id: r.id, status: r.status },
+    properties: { id: r.id, status: DOT[r.booking.status] },
   }));
   map.getSource("campgrounds").setData({ type: "FeatureCollection", features });
   if (features.length) {
@@ -186,6 +198,13 @@ form.start.addEventListener("change", () => {
 });
 form.addEventListener("submit", (e) => { e.preventDefault(); runSearch(); });
 sortSelect.addEventListener("change", runSearch);
+list.addEventListener("click", (e) => {
+  const button = e.target.closest("button.add-cal");
+  if (!button) return;
+  setSavedIds([...savedIds(), Number(button.dataset.id)]);
+  button.textContent = "✓ In booking calendar";
+  button.disabled = true;
+});
 list.addEventListener("mouseover", (e) => {
   const li = e.target.closest("li[data-id]");
   if (li) list.querySelectorAll("li").forEach((el) => el.classList.toggle("active", el === li));

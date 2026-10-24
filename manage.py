@@ -3,11 +3,10 @@
 import argparse
 import logging
 import sys
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 
-from campfinder import config, db, demo, scheduler, server, store
+from campfinder import config, db, planner, search, server, store
 from campfinder.adapters import ridb, seed
-from campfinder.adapters.base import AdapterDisabled
 
 
 def cmd_initdb(conn, _args):
@@ -51,79 +50,74 @@ def cmd_import_seed(conn, args):
 def find_campgrounds(conn, query):
     """Match by id, or by every word appearing in the name."""
     if query.isdigit():
-        return conn.execute("SELECT id, name, source, watched FROM campgrounds WHERE id = ?",
+        return conn.execute("SELECT id, name, source FROM campgrounds WHERE id = ?",
                             (int(query),)).fetchall()
     words = query.split()
     return conn.execute(
-        "SELECT id, name, source, watched FROM campgrounds WHERE "
+        "SELECT id, name, source FROM campgrounds WHERE "
         + " AND ".join("name LIKE ?" for _ in words) + " ORDER BY name",
         [f"%{w}%" for w in words],
     ).fetchall()
 
 
-def cmd_watch(conn, args):
-    db.init(conn)
-    if args.action == "list":
-        rows = conn.execute("SELECT id, name, source FROM campgrounds WHERE watched ORDER BY name").fetchall()
-        for r in rows:
-            print(f"  {r['id']:>4}  {r['name']}  [{r['source']}]")
-        print(f"{len(rows)} watched. Polled {config.WATCH_DAYS} days ahead; "
-              f"Recreation.gov polling is {'ON' if config.RECGOV_AVAILABILITY_ENABLED else 'OFF'}.")
-        return
-    if not args.names:
-        sys.exit("Give one or more campground ids or names, e.g. watch add \"moraine park\"")
-    for query in args.names:
-        matches = find_campgrounds(conn, query)
-        if not matches:
-            print(f"  no campground matches '{query}'")
-            continue
-        if len(matches) > 1 and not args.all:
-            print(f"  '{query}' matches {len(matches)} campgrounds; use an id, or --all:")
-            for r in matches:
-                print(f"    {r['id']:>4}  {r['name']}  [{r['source']}]")
-            continue
+def _one_campground(conn, query):
+    matches = find_campgrounds(conn, query)
+    if len(matches) != 1:
         for r in matches:
-            conn.execute("UPDATE campgrounds SET watched = ? WHERE id = ?", (args.action == "add", r["id"]))
-            print(f"  {'watching' if args.action == 'add' else 'stopped watching'}: {r['name']}")
-    conn.commit()
+            print(f"    {r['id']:>4}  {r['name']}  [{r['source']}]")
+        sys.exit(f"'{query}' matches {len(matches)} campgrounds; use an id or more words.")
+    return matches[0]
 
 
-def cmd_seed_demo(conn, args):
+def cmd_plan(conn, args):
     db.init(conn)
-    demo.clear(conn)
-    if args.clear:
-        print("Removed demo data.")
-        return
-    print(f"Seeded {demo.seed(conn)} DEMO campgrounds (fake data, labelled in the UI).")
+    cg = _one_campground(conn, args.campground)
+    if args.month:
+        year, month = map(int, args.month.split("-"))
+        stays = planner.weekends(year, month)
+    else:
+        if not (args.checkin and args.checkout):
+            sys.exit("Give CHECKIN CHECKOUT (YYYY-MM-DD) or --month YYYY-MM")
+        stays = [(date.fromisoformat(args.checkin), date.fromisoformat(args.checkout))]
+    print(cg["name"])
+    for checkin, checkout in stays:
+        try:
+            p = planner.plan(conn, cg["id"], checkin, checkout)
+        except search.SearchError as e:
+            print(f"  {checkin} to {checkout}: {e}")
+            continue
+        when = {"open": "already bookable", "no_reservations": "no reservations (first-come)",
+                "lottery": "lottery"}.get(p["status"], p.get("opens_at_text"))
+        extra = f"; last night opens {p['full_stay_opens_at_text']}" if p.get("full_stay_opens_at_text") else ""
+        print(f"  {checkin} to {checkout}: {when}{extra}")
+    if p.get("rule"):
+        print(f"  Rule: {p['rule']['summary']} - "
+              + (f"verified {p['rule']['verified_on']}" if p["verified"] else "UNVERIFIED, check the booking site"))
+    if not args.month:
+        for b in p["backups"]:
+            print(f"  backup: {b['name']} ({b['distance_mi']} mi) "
+                  f"{'already bookable' if b['status'] == 'open' else b['opens_at_text']}")
 
 
-def cmd_poll(conn, args):
+def cmd_openings(conn, args):
     db.init(conn)
-    try:
-        if args.loop:
-            scheduler.worker_loop(conn)
-        else:
-            print(f"Ran {scheduler.run_due(conn, max_jobs=args.max_jobs)} poll jobs.")
-    except AdapterDisabled as e:
-        sys.exit(str(e))
+    ids = [r["id"] for q in args.names for r in find_campgrounds(conn, q)]
+    if not ids:
+        sys.exit("No campgrounds match. Give ids or name words, e.g. openings \"moraine park\"")
+    start = datetime.now(timezone.utc)
+    openings = planner.openings_between(conn, ids, start, start + timedelta(days=args.days))
+    for o in openings:
+        print(f"  {planner.friendly(o['opens_at'], o['time_known'])}: {o['campground']}, "
+              f"night of {o['night']:%a %b} {o['night'].day}")
+    print(f"{len(openings)} nights open in the next {args.days} days.")
 
 
 def cmd_status(conn, _args):
     db.init(conn)
     meta = server.api_meta(conn, {})
-    print(f"Campgrounds: {meta['campgrounds']}  Campsites: {meta['campsites']}  "
-          f"Last availability check: {meta['last_checked'] or 'never'}")
-    print(f"Recreation.gov availability polling: "
-          f"{'ON' if config.RECGOV_AVAILABILITY_ENABLED else 'OFF'}")
-    print(f"Poll jobs due now: {len(scheduler.due_jobs(conn))}")
-    for s in server.api_health(conn, {})["sources"]:
-        print(f"  {s['source']}: {s['ok_24h']}/{s['runs_24h']} ok in 24h, "
-              f"last success {s['last_success']}, last error: {s['last_error']}")
-
-
-def cmd_prune(conn, _args):
-    removed = db.prune_old_availability(conn, (date.today() - timedelta(days=1)).isoformat())
-    print(f"Removed {removed} old availability rows.")
+    print(f"Campgrounds: {meta['campgrounds']}  Campsites: {meta['campsites']}")
+    for a in meta["agencies"]:
+        print(f"  {a['name']}: {a['campgrounds']}")
 
 
 def cmd_serve(conn, args):
@@ -145,17 +139,15 @@ def main(argv=None):
                    help="skip the radius-grid pass (faster; may miss a few campgrounds)")
     p = sub.add_parser("import-seed", help="import hand-curated state/county campgrounds from CSV")
     p.add_argument("--csv", default=seed.SEED_CSV, help="path to seed CSV")
-    p = sub.add_parser("watch", help="manage which campgrounds get live availability checks")
-    p.add_argument("action", choices=["add", "remove", "list"])
-    p.add_argument("names", nargs="*", help="campground ids or name words")
-    p.add_argument("--all", action="store_true", help="apply to every match")
-    p = sub.add_parser("seed-demo", help="load fake demo campgrounds to try the UI")
-    p.add_argument("--clear", action="store_true", help="remove demo data instead")
-    p = sub.add_parser("poll", help="run due availability checks")
-    p.add_argument("--max-jobs", type=int, default=20)
-    p.add_argument("--loop", action="store_true", help="keep running as a worker")
-    sub.add_parser("status", help="show data and source health")
-    sub.add_parser("prune", help="delete availability rows for past dates")
+    p = sub.add_parser("plan", help="when does a stay become bookable? (booking-day planner)")
+    p.add_argument("campground", help="campground id or name words")
+    p.add_argument("checkin", nargs="?")
+    p.add_argument("checkout", nargs="?")
+    p.add_argument("--month", help="YYYY-MM: plan every Fri-Sun weekend in that month instead")
+    p = sub.add_parser("openings", help="nights that open for booking in the next few days")
+    p.add_argument("names", nargs="+", help="campground ids or name words")
+    p.add_argument("--days", type=int, default=7)
+    sub.add_parser("status", help="show data counts")
     p = sub.add_parser("serve", help="run the website")
     p.add_argument("--host")
     p.add_argument("--port", type=int)
@@ -165,8 +157,7 @@ def main(argv=None):
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     commands = {
         "initdb": cmd_initdb, "import-ridb": cmd_import_ridb, "import-seed": cmd_import_seed,
-        "seed-demo": cmd_seed_demo, "watch": cmd_watch,
-        "poll": cmd_poll, "status": cmd_status, "prune": cmd_prune, "serve": cmd_serve,
+        "plan": cmd_plan, "openings": cmd_openings, "status": cmd_status, "serve": cmd_serve,
     }
     conn = db.connect()
     try:

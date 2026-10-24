@@ -10,9 +10,13 @@
 <body>
   <header>
     <h1><a href="/">Colorado Campsite Finder</a></h1>
+    <nav class="nav"><a href="/" data-nav="search" aria-current="page">Find campgrounds</a><a href="/calendar.html" data-nav="calendar">Booking calendar</a></nav>
     <span class="freshness" id="freshness"></span>
   </header>
   <div class="banner" id="banner" hidden></div>
+  <p class="pitch">Colorado campsites sell out the minute they open. Pick your dates to see exactly when each
+    campground opens for booking. Add the ones you want to the <a href="/calendar.html">booking calendar</a>
+    to see all your booking days at once.</p>
 
   <div class="layout">
     <form class="filters" id="filters">
@@ -77,18 +81,16 @@
         <label>Sort
           <select id="sort">
             <option value="distance">Distance</option>
-            <option value="availability">Availability</option>
+            <option value="opens">Booking opens soonest</option>
             <option value="price">Price</option>
             <option value="name">Name</option>
           </select>
         </label>
       </div>
       <div class="legend">
-        <span><span class="dot open"></span>Open all nights</span>
-        <span><span class="dot partial"></span>Some nights</span>
-        <span><span class="dot full"></span>Full or closed</span>
-        <span><span class="dot unknown"></span>Not checked</span>
-        <span><span class="dot fcfs"></span>First-come only</span>
+        <span><span class="dot upcoming"></span>Opens later (see time)</span>
+        <span><span class="dot open"></span>Booking already open</span>
+        <span><span class="dot fcfs"></span>No reservations</span>
       </div>
       <ul class="results" id="results"></ul>
     </main>

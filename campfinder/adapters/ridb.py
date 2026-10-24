@@ -9,7 +9,7 @@ import re
 from .. import config, fetch
 from .base import Agency, Campground, Campsite, SchemaError
 
-SOURCE = "recgov"  # campgrounds imported here are polled by the recgov adapter
+SOURCE = "recgov"  # campgrounds imported here are booked on Recreation.gov
 BASE_URL = "https://ridb.recreation.gov/api/v1"
 PAGE_SIZE = 50
 DEFAULT_BOOKING_WINDOW_DAYS = 180  # varies per campground on Recreation.gov

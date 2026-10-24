@@ -1,7 +1,7 @@
 """Hand-curated campground list (seed/seed_campgrounds.csv) for systems with no list API:
 CPW state parks, Larimer County, Jefferson County Open Space, Denver Mountain Parks.
 
-Metadata only; these sources have no availability adapter yet. Edit the lists in
+Metadata only. Edit the lists in
 seed/build_seed.py, regenerate the CSV, then run `manage.py import-seed`.
 """
 import csv
