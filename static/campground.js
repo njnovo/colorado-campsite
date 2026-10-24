@@ -74,6 +74,10 @@ async function load(start) {
       <button type="button" id="prev">← 2 weeks</button>
       <button type="button" id="next">2 weeks →</button>
       <span class="meta">Last checked ${timeAgo(cg.last_checked)}</span>
+      ${cg.live_check
+        ? `<button type="button" class="primary" id="checkNow">Check live availability now</button>
+           <span class="meta" id="checkStatus"></span>`
+        : `<span class="meta">Live checks aren't available for ${esc(cg.booking_system)} yet; use the booking link.</span>`}
     </div>
     ${calendar(cg)}
     ${cg.amenities.length ? `<h3>Amenities &amp; activities</h3><p>${cg.amenities.map(esc).join(" · ")}</p>` : ""}
@@ -82,6 +86,26 @@ async function load(start) {
   document.getElementById("calStart").addEventListener("change", (e) => e.target.value && load(e.target.value));
   document.getElementById("prev").addEventListener("click", () => load(addDays(start, -14)));
   document.getElementById("next").addEventListener("click", () => load(addDays(start, 14)));
+  document.getElementById("checkNow")?.addEventListener("click", () => checkNow(cg.id, start, end));
+}
+
+async function checkNow(id, start, end) {
+  const button = document.getElementById("checkNow");
+  const status = document.getElementById("checkStatus");
+  button.disabled = true;
+  status.textContent = "Checking Recreation.gov… (about 10 s per month, longer if the background checker is busy)";
+  try {
+    const resp = await fetch(`/api/campgrounds/${id}/check?start=${start}&end=${end}`, { method: "POST" });
+    const body = await resp.json();
+    if (!resp.ok) throw new Error(body.error || `HTTP ${resp.status}`);
+    if (body.failed) throw new Error(`${body.failed} month(s) failed; try again in a minute`);
+    await load(start);
+    const done = document.getElementById("checkStatus");
+    if (done) done.textContent = body.checked ? "Updated just now." : "Already checked in the last 5 minutes.";
+  } catch (err) {
+    status.textContent = `Check failed: ${err.message}`;
+    button.disabled = false;
+  }
 }
 
 (async function init() {

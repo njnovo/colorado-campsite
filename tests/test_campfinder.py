@@ -1,5 +1,6 @@
 """Run with: python3 -m unittest discover -s tests"""
 import json
+import tempfile
 import unittest
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -349,6 +350,44 @@ class ClosedMonthTest(unittest.TestCase):
             self.assertTrue(scheduler.run_job(conn, job))
         rows = conn.execute("SELECT status, COUNT(*), MIN(date), MAX(date) FROM availability GROUP BY status").fetchall()
         self.assertEqual([tuple(r) for r in rows], [("closed", 2 * 28, "2027-02-01", "2027-02-28")])
+
+
+class CheckNowTest(unittest.TestCase):
+    def setUp(self):
+        self.conn = memory_db()
+        self.cg_id = store.upsert_campground(self.conn, make_campground())
+        self.calls = []
+
+        def fake(source_id, month):
+            self.calls.append(month)
+            return 200, {"t1": {month.isoformat(): "available"}}
+        self.patch = mock.patch.dict(scheduler.AVAILABILITY_ADAPTERS, {"recgov": fake})
+        self.patch.start()
+        self.addCleanup(self.patch.stop)
+
+    def test_checks_each_month_once_then_cools_down(self):
+        result = scheduler.check_now(self.conn, self.cg_id, date(2027, 7, 25), date(2027, 8, 7))
+        self.assertEqual(result, {"checked": 2, "skipped": 0, "failed": 0})
+        self.assertEqual(self.calls, [date(2027, 7, 1), date(2027, 8, 1)])
+        again = scheduler.check_now(self.conn, self.cg_id, date(2027, 7, 25), date(2027, 8, 7))
+        self.assertEqual(again, {"checked": 0, "skipped": 2, "failed": 0})
+
+    def test_rejects_sources_without_adapter(self):
+        other = store.upsert_campground(self.conn, make_campground("x", source="cpw"))
+        with self.assertRaises(LookupError):
+            scheduler.check_now(self.conn, other, date(2027, 7, 1), date(2027, 7, 2))
+
+
+class SharedRateLimiterTest(unittest.TestCase):
+    def test_limit_shared_through_state_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            sleeps = []
+            a = RateLimiter({"x": 10.0}, sleep=sleeps.append, state_dir=tmp)
+            b = RateLimiter({"x": 10.0}, sleep=sleeps.append, state_dir=tmp)  # "another process"
+            a.wait("x")
+            b.wait("x")
+            self.assertEqual(len(sleeps), 1)
+            self.assertGreater(sleeps[0], 9.0)
 
 if __name__ == "__main__":
     unittest.main()

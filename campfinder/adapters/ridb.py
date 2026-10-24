@@ -161,7 +161,15 @@ CO_LNG = (-109.06, -102.04)
 GRID_RADIUS_MI = 50
 
 
+# Facilities RIDB places in Colorado (by mailing address) that are actually elsewhere.
+EXCLUDED_FACILITIES = {
+    "274864": "Vedauwoo is in Wyoming; RIDB has no coordinates and a Colorado address",
+}
+
+
 def in_colorado(raw):
+    if str(raw.get("FacilityID")) in EXCLUDED_FACILITIES:
+        return False
     lat, lng = raw.get("FacilityLatitude") or 0, raw.get("FacilityLongitude") or 0
     if CO_LAT[0] <= lat <= CO_LAT[1] and CO_LNG[0] <= lng <= CO_LNG[1]:
         return True

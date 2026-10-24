@@ -4,6 +4,7 @@ Every adapter goes through get_json(), which enforces a per-source minimum
 interval between requests, sends an honest User-Agent, and backs off on
 429 / 5xx responses.
 """
+import fcntl
 import json
 import random
 import threading
@@ -11,6 +12,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from pathlib import Path
 
 from . import config
 
@@ -30,25 +32,48 @@ class FetchError(Exception):
 
 
 class RateLimiter:
-    def __init__(self, intervals=None, sleep=time.sleep, clock=time.monotonic):
+    """Minimum interval between requests per source.
+
+    With state_dir, the last-request time lives in a locked file, so the web
+    server (on-demand checks) and the poller process share one limit.
+    """
+
+    def __init__(self, intervals=None, sleep=time.sleep, clock=time.monotonic, state_dir=None):
         self.intervals = intervals if intervals is not None else SOURCE_INTERVALS
         self._last = {}
         self._lock = threading.Lock()
         self._sleep = sleep
-        self._clock = clock
+        self._clock = time.time if state_dir else clock
+        self._state_dir = Path(state_dir) if state_dir else None
+
+    def _delay(self, source, last):
+        interval = self.intervals.get(source, DEFAULT_INTERVAL)
+        if last is None:
+            return 0
+        return last + interval * random.uniform(1.0, 1.25) - self._clock()
 
     def wait(self, source):
-        interval = self.intervals.get(source, DEFAULT_INTERVAL)
         with self._lock:
-            last = self._last.get(source)
-            if last is not None:
-                delay = last + interval * random.uniform(1.0, 1.25) - self._clock()
+            if self._state_dir is None:
+                delay = self._delay(source, self._last.get(source))
                 if delay > 0:
                     self._sleep(delay)
-            self._last[source] = self._clock()
+                self._last[source] = self._clock()
+                return
+            self._state_dir.mkdir(parents=True, exist_ok=True)
+            with open(self._state_dir / f"ratelimit-{source}", "a+") as fh:
+                fcntl.flock(fh, fcntl.LOCK_EX)  # other processes wait here
+                fh.seek(0)
+                text = fh.read().strip()
+                delay = self._delay(source, float(text) if text else None)
+                if delay > 0:
+                    self._sleep(delay)
+                fh.seek(0)
+                fh.truncate()
+                fh.write(str(self._clock()))
 
 
-limiter = RateLimiter()
+limiter = RateLimiter(state_dir=Path(config.DB_PATH).parent if config.DB_PATH != ":memory:" else None)
 
 
 def build_url(url, params=None):

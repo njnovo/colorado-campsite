@@ -4,6 +4,7 @@
     GET /api/search?start=&end=&...   campgrounds with availability status
     GET /api/campgrounds/<id>?start=&end=
     GET /api/health                   last poll result per source
+    POST /api/campgrounds/<id>/check?start=&end=   check live availability now
 """
 import json
 import logging
@@ -12,7 +13,9 @@ from datetime import date, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
-from . import config, db, search
+from . import config, db, scheduler, search
+from .adapters import AVAILABILITY_ADAPTERS
+from .adapters.base import AdapterDisabled
 
 log = logging.getLogger(__name__)
 
@@ -90,7 +93,27 @@ def api_campground(conn, params, campground_id):
     cg = search.get_campground(conn, campground_id, start, end)
     if cg is None:
         return 404, {"error": "campground not found"}
+    cg["live_check"] = live_check_available(cg)
     return 200, cg
+
+
+def live_check_available(cg):
+    if cg["source"] not in AVAILABILITY_ADAPTERS or not cg["reservable"]:
+        return False
+    return cg["source"] != "recgov" or config.RECGOV_AVAILABILITY_ENABLED
+
+
+def api_check(conn, params, campground_id):
+    start = _date(params, "start", date.today())
+    end = _date(params, "end", start + timedelta(days=13))
+    if end < start or (end - start).days > 62:
+        raise search.SearchError("check at most two months at a time")
+    try:
+        return 200, scheduler.check_now(conn, campground_id, start, end)
+    except LookupError as e:
+        return 409, {"error": str(e)}
+    except AdapterDisabled:
+        return 409, {"error": "live checks for this source are switched off"}
 
 
 def api_health(conn, _params):
@@ -129,9 +152,19 @@ class Handler(BaseHTTPRequestHandler):
             return self._api(url.path, params)
         return self._static(url.path)
 
-    def _api(self, path, params):
+    def do_POST(self):
+        url = urlparse(self.path)
+        params = {k: v[-1] for k, v in parse_qs(url.query).items()}
+        parts = url.path.strip("/").split("/")
+        if len(parts) == 4 and parts[:2] == ["api", "campgrounds"] and parts[2].isdigit() and parts[3] == "check":
+            return self._api(url.path, params, lambda conn: api_check(conn, params, int(parts[2])))
+        return self._send(404, {"error": "not found"})
+
+    def _api(self, path, params, handler=None):
         conn = db.connect()
         try:
+            if handler:
+                return self._send(*handler(conn))
             parts = path.strip("/").split("/")
             if path == "/api/meta":
                 return self._send(200, api_meta(conn, params))

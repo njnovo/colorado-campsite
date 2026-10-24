@@ -125,6 +125,43 @@ def run_job(conn, job):
     return bool(ok)
 
 
+ON_DEMAND_COOLDOWN = 5 * 60
+
+
+def months_between(start, end):
+    month = start.replace(day=1)
+    while month <= end:
+        yield month
+        month = (month + timedelta(days=32)).replace(day=1)
+
+
+def check_now(conn, campground_id, start, end, now=None):
+    """Check one campground immediately for the months covering start..end.
+
+    Months checked successfully in the last ON_DEMAND_COOLDOWN seconds are
+    skipped. Returns {"checked": n, "skipped": n, "failed": n}. Raises
+    AdapterDisabled, or LookupError if the campground has no live source.
+    """
+    now = now or datetime.now(timezone.utc)
+    cg = conn.execute("SELECT id, source, source_id, reservable FROM campgrounds WHERE id = ?",
+                      (campground_id,)).fetchone()
+    if cg is None or cg["source"] not in AVAILABILITY_ADAPTERS or not cg["reservable"]:
+        raise LookupError("no live availability source for this campground")
+    result = {"checked": 0, "skipped": 0, "failed": 0}
+    for month in months_between(start, end):
+        last = conn.execute(
+            """SELECT MAX(started_at) FROM poll_runs
+               WHERE campground_id = ? AND month = ? AND ok = 1""",
+            (campground_id, month.isoformat()),
+        ).fetchone()[0]
+        if last and (now - datetime.fromisoformat(last)).total_seconds() < ON_DEMAND_COOLDOWN:
+            result["skipped"] += 1
+            continue
+        ok = run_job(conn, Job(cg["source"], cg["id"], cg["source_id"], month, "on-demand", None))
+        result["checked" if ok else "failed"] += 1
+    return result
+
+
 def run_due(conn, max_jobs=None):
     jobs = due_jobs(conn)[:max_jobs] if max_jobs else due_jobs(conn)
     for job in jobs:
