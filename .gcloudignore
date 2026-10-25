@@ -1,0 +1,10 @@
+# Files NOT uploaded by `gcloud run deploy --source .`
+# (without this file gcloud would use .gitignore and skip the database)
+.git
+.env
+__pycache__/
+*.pyc
+tests/
+data/ratelimit-*
+data/*.db-wal
+data/*.db-shm

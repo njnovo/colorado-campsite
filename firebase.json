@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "public": "static",
+    "cleanUrls": false,
+    "rewrites": [
+      { "source": "/api/**", "run": { "serviceId": "campsite-api", "region": "us-central1" } }
+    ],
+    "headers": [
+      { "source": "**/*.@(html|js|css)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
+    ]
+  }
+}
