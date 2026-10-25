@@ -18,14 +18,14 @@ jobs:
   deploy:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Tests
         run: python3 -m unittest discover -s tests
-      - uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: projects/476726919278/locations/global/workloadIdentityPools/github/providers/github
           service_account: github-deployer@colorado-campsite.iam.gserviceaccount.com
-      - uses: google-github-actions/setup-gcloud@v2
+      - uses: google-github-actions/setup-gcloud@v3
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
       - name: Deploy
