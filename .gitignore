@@ -1,5 +1,6 @@
 .env
-data/
+data/*
+!data/campsites.db
 __pycache__/
 *.pyc
 .firebase/

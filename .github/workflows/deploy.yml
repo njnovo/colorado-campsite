@@ -1,0 +1,32 @@
+# Every push to main: run the tests, then deploy to https://colorado-campsite.web.app
+# Signs in to Google with Workload Identity Federation (no keys stored on GitHub);
+# ci-setup.sh created the pool and the github-deployer service account.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency: deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tests
+        run: python3 -m unittest discover -s tests
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/476726919278/locations/global/workloadIdentityPools/github/providers/github
+          service_account: github-deployer@colorado-campsite.iam.gserviceaccount.com
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+      - name: Deploy
+        run: ./deploy.sh colorado-campsite

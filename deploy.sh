@@ -11,8 +11,11 @@ if [ ! -f data/campsites.db ]; then
   exit 1
 fi
 
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
-  --project "$PROJECT"
+# Already on after the first deploy; GitHub Actions (CI=true) lacks permission to enable APIs.
+if [ -z "${CI:-}" ]; then
+  gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com \
+    --project "$PROJECT"
+fi
 gcloud run deploy campsite-api --source . --project "$PROJECT" --region "$REGION" \
   --allow-unauthenticated --memory 512Mi --max-instances 2 --quiet
 firebase deploy --only hosting --project "$PROJECT"
