@@ -243,5 +243,14 @@ class SharedRateLimiterTest(unittest.TestCase):
             self.assertEqual(len(sleeps), 1)
             self.assertGreater(sleeps[0], 9.0)
 
+
+class DistanceTest(unittest.TestCase):
+    def test_haversine(self):
+        denver, estes_park = (39.7392, -104.9903), (40.3772, -105.5217)
+        self.assertAlmostEqual(db.haversine_mi(*denver, *estes_park), 52.3, delta=0.1)
+        self.assertAlmostEqual(db.haversine_mi(*estes_park, *denver), 52.3, delta=0.1)
+        self.assertEqual(db.haversine_mi(*denver, *denver), 0)
+        self.assertIsNone(db.haversine_mi(None, -105.0, 40.0, -105.0))
+
 if __name__ == "__main__":
     unittest.main()

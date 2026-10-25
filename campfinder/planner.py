@@ -97,6 +97,26 @@ def rule_for(source, source_id, reservable=True, rules=None):
     return Rule(**{**default.__dict__, "source_id": source_id, "is_default": True})
 
 
+# Niels [TBD] thses two functions below：
+# - months_before(day, months) returns the same day of the month, months earlier. It has two tricky parts:
+#   a. Crossing into last year. 6 months before March 2027 is September 2026. Hint: turn the date into one number of months (year * 12 + (month - 1)), subtract, then split it back with divmod(total, 12).
+#   b. Short months. 6 months before Aug 31 would be "Feb 31", which doesn't exist, so use the last day of February instead. Hint: calendar.monthrange(year, month)[1] gives the number of days in a month, and min() picks the smaller day.
+# - For going back days, timedelta(days=...) is already imported.
+# months_before: months-as-one-number, divmod(..., 12), 
+# calendar.monthrange, min.
+#def months_before(day: date, months: int) -> date:
+#    """Same day-of-month `months` earlier, clamped to the end of a shorter month."""
+
+# - opening_date(night, rule) looks at rule.window_type:
+#   - "rolling_months": go back rule.window_amount months from night (calls months_before).
+#   - "rolling_days": go back rule.window_amount days.
+#   - "fixed_date": always return rule.opens_on.
+#   - anything else (first-come or lottery): return None.
+# opening_date: one if for each rule.window_type: 
+# "rolling_months", "rolling_days", "fixed_date", else None.
+#def opening_date(night: date, rule: Rule) -> date | None:
+
+# Neils [TBD]： then delete thses months_before and opening_date functions below.:
 def months_before(day: date, months: int) -> date:
     """Same day-of-month `months` earlier, clamped to the end of a shorter month."""
     y, m = divmod(day.year * 12 + day.month - 1 - months, 12)
@@ -368,7 +388,18 @@ def booking_events(conn, campground_ids, stays, now=None, rules=None):
 
 
 # --- Stretch: every weekend in a month, and upcoming openings ---
+# Avi： 
+# What it has to do:
+# - Return a list of pairs: (Friday, the Sunday 2 days later) for every Friday in that month.
+# - Hints:
+#   - calendar.monthrange(year, month)[1] gives the number of days in the month.
+#   - Loop over day 1 up to that number, making each date with date(year, month, day).
+#   - .weekday() == 4 means Friday (Monday is 0).
+#   - d + timedelta(days=2) gives the Sunday.
+# How to check: StretchTest checks July 2027: the first weekend is Jul 2 – Jul 4, and there are 5 weekends.
+# def weekends(year, month):
 
+# delete this one：   
 def weekends(year, month):
     """(Friday, Sunday) check-in/check-out pairs whose Friday falls in the month."""
     days = calendar.monthrange(year, month)[1]
