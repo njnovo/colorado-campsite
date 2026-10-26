@@ -107,6 +107,12 @@ def rule_for(source, source_id, reservable=True, rules=None):
 #def months_before(day: date, months: int) -> date:
 #    """Same day-of-month `months` earlier, clamped to the end of a shorter month."""
 
+def months_before(day: date, months: int) -> date:
+    day_in_months = day.year * 12 + day.month
+    new_day_in_months = day_in_months - months
+    new_day = date(new_day_in_months // 12, new_day_in_months % 12 + 1, min(day.day, calendar.monthrange(new_day_in_months // 12, new_day_in_months % 12 + 1)[1]))
+    return new_day
+
 # - opening_date(night, rule) looks at rule.window_type:
 #   - "rolling_months": go back rule.window_amount months from night (calls months_before).
 #   - "rolling_days": go back rule.window_amount days.
@@ -114,15 +120,6 @@ def rule_for(source, source_id, reservable=True, rules=None):
 #   - anything else (first-come or lottery): return None.
 # opening_date: one if for each rule.window_type: 
 # "rolling_months", "rolling_days", "fixed_date", else None.
-#def opening_date(night: date, rule: Rule) -> date | None:
-
-# Neils [TBD]： then delete thses months_before and opening_date functions below.:
-def months_before(day: date, months: int) -> date:
-    """Same day-of-month `months` earlier, clamped to the end of a shorter month."""
-    y, m = divmod(day.year * 12 + day.month - 1 - months, 12)
-    return date(y, m + 1, min(day.day, calendar.monthrange(y, m + 1)[1]))
-
-
 def opening_date(night: date, rule: Rule) -> date | None:
     if rule.window_type == "rolling_months":
         return months_before(night, rule.window_amount)
@@ -131,6 +128,8 @@ def opening_date(night: date, rule: Rule) -> date | None:
     if rule.window_type == "fixed_date":
         return rule.opens_on
     return None
+
+# Neils [TBD]： then delete thses months_before and opening_date functions below.:
 
 
 def opening_time(night: date, rule: Rule) -> datetime | None:
