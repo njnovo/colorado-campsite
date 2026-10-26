@@ -157,5 +157,6 @@ The repo still contains live-availability code that's switched off: `adapters/re
 Say this accurately:
 
 - **Built with AI (Claude Code):** the campground database and importers (RIDB federal data, the hand-curated state/county list), the search API, the map and list UI, the campground pages and the existing tests.
-- **Also built with AI (Claude Code), as a first prototype of this plan:** `seed/booking_rules.csv` and its research, `campfinder/planner.py` (opening-time math, backups, `.ics` export), `tests/test_planner.py`, the plan and booking-calendar endpoints in `server.py`, the planner box in `campground.js`, the booking calendar page (`calendar.html`, `calendar.js`), removing the availability code, and the `plan` / `openings` commands.
-- **Built by Niels:** update this list with the parts you rewrite yourself.
+- **Also built with AI (Claude Code), as a first prototype of this plan:** `seed/booking_rules.csv` and its research, the rest of `campfinder/planner.py` (opening-time math, backups, `.ics` export; except the hand-written functions listed below), `tests/test_planner.py`, the plan and booking-calendar endpoints in `server.py`, the planner box in `campground.js`, the booking calendar page (`calendar.html`, `calendar.js`), removing the availability code, and the `plan` / `openings` commands.
+- **Built by Niels:** `planner.months_before()` (same day N months earlier, clamped to the end of a shorter month). Update this list with the other parts you rewrite yourself.
+- **Built by Avi:** `db.haversine_mi()` (miles between two map points, used for "within 30 miles" search and backups) and `planner.weekends()` (every Friday–Sunday stay in a month, used by the booking calendar's weekend mode).
