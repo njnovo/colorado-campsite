@@ -154,8 +154,6 @@ That code (`adapters/recgov.py`, the watchlist, `scheduler.py` and the "Check li
 
 ## Disclosure
 
-Say this accurately:
-
 - **Built with AI (Claude Code):** the campground database and importers (RIDB federal data, the hand-curated state/county list), the search API, the map and list UI, the campground pages and the existing tests.
 - **Also built with AI (Claude Code), as a first prototype of this plan:** `seed/booking_rules.csv` and its research, the rest of `campfinder/planner.py` (opening-time math, backups, `.ics` export; except the hand-written functions listed below), `tests/test_planner.py`, the plan and booking-calendar endpoints in `server.py`, the planner box in `campground.js`, the booking calendar page (`calendar.html`, `calendar.js`), removing the availability code, and the `plan` / `openings` commands.
 - **Built by Niels:** `planner.months_before()` (same day N months earlier, clamped to the end of a shorter month) and `planner.opening_date()` (the day a night becomes bookable under each kind of booking rule: rolling months, rolling days, fixed date, or none).
