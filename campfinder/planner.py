@@ -386,24 +386,14 @@ def booking_events(conn, campground_ids, stays, now=None, rules=None):
     return {"campgrounds": campgrounds, "events": events}
 
 
-# --- Stretch: every weekend in a month, and upcoming openings ---
-# Avi： 
-# What it has to do:
-# - Return a list of pairs: (Friday, the Sunday 2 days later) for every Friday in that month.
-# - Hints:
-#   - calendar.monthrange(year, month)[1] gives the number of days in the month.
-#   - Loop over day 1 up to that number, making each date with date(year, month, day).
-#   - .weekday() == 4 means Friday (Monday is 0).
-#   - d + timedelta(days=2) gives the Sunday.
-# How to check: StretchTest checks July 2027: the first weekend is Jul 2 – Jul 4, and there are 5 weekends.
-# def weekends(year, month):
 
-# delete this one：   
-def weekends(year, month):
-    """(Friday, Sunday) check-in/check-out pairs whose Friday falls in the month."""
+
+def weekends (year, month):
+    friday = 4
     days = calendar.monthrange(year, month)[1]
-    return [(d, d + timedelta(days=2)) for d in (date(year, month, i) for i in range(1, days + 1))
-            if d.weekday() == 4]
+    return  [(d, d + timedelta(days=2)) for d in (date(year, month, i) for i in range (1, days + 1))
+            if d.weekday() == friday]
+
 
 
 def openings_between(conn, campground_ids, start: datetime, end: datetime, rules=None):

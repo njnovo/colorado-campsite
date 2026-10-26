@@ -64,23 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_campsites_campground ON campsites(campground_id);
 def now_iso():
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
-# Avi:
-# Distance between two places (Python)
-# File: campfinder/db.py, lines 68–75, haversine_mi(lat1, lng1, lat2, lng2). I've just opened it in VS Code.
-# This works out how many miles apart two map points are. It powers "campgrounds within 30 miles" on the search page and the backup suggestions.
-# What it has to do:
-# - If any of the four numbers is None, return None.
-# - Otherwise use the haversine formula, which measures distance on a curved Earth:
-#   a. Earth's radius is 3958.8 miles.
-#   b. Convert the latitudes and the differences to radians with math.radians(...).
-#   c. a = sin²(Δlat/2) + cos(lat1) · cos(lat2) · sin²(Δlng/2)
-#   d. distance = 2 · radius · asin(√a)
-# - He can look up "haversine formula" to see why it works, which is good material for the competition write-up.
-
-# How to check: I added a test, DistanceTest. 
-# Denver to Estes Park should come out at about 52.3 miles, a place to itself is 0, and a missing number gives None.
-# def haversine_mi(lat1, lng1, lat2, lng2):
-
+# distance between two lat/lng points in miles, using the haversine formula
 def haversine_mi(lat1, lng1, lat2, lng2):
     if None in (lat1, lng1, lat2, lng2):
         return None
@@ -89,7 +73,6 @@ def haversine_mi(lat1, lng1, lat2, lng2):
     dp, dl = p2 - p1, math.radians(lng2 - lng1)
     a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
     return 2 * r * math.asin(math.sqrt(a))
-
 
 def connect(path=None):
     path = path or config.DB_PATH
