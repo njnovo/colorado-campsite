@@ -97,16 +97,6 @@ def rule_for(source, source_id, reservable=True, rules=None):
     return Rule(**{**default.__dict__, "source_id": source_id, "is_default": True})
 
 
-# Niels [TBD] thses two functions below：
-# - months_before(day, months) returns the same day of the month, months earlier. It has two tricky parts:
-#   a. Crossing into last year. 6 months before March 2027 is September 2026. Hint: turn the date into one number of months (year * 12 + (month - 1)), subtract, then split it back with divmod(total, 12).
-#   b. Short months. 6 months before Aug 31 would be "Feb 31", which doesn't exist, so use the last day of February instead. Hint: calendar.monthrange(year, month)[1] gives the number of days in a month, and min() picks the smaller day.
-# - For going back days, timedelta(days=...) is already imported.
-# months_before: months-as-one-number, divmod(..., 12), 
-# calendar.monthrange, min.
-#def months_before(day: date, months: int) -> date:
-#    """Same day-of-month `months` earlier, clamped to the end of a shorter month."""
-
 def months_before(day: date, months: int) -> date:
     day_in_months = day.year * 12 + day.month -1
     new_day_in_months = day_in_months - months
@@ -118,6 +108,7 @@ def months_before(day: date, months: int) -> date:
 #   - "rolling_days": go back rule.window_amount days.
 #   - "fixed_date": always return rule.opens_on.
 #   - anything else (first-come or lottery): return None.
+# - For going back days, timedelta(days=...) is already imported.
 # opening_date: one if for each rule.window_type: 
 # "rolling_months", "rolling_days", "fixed_date", else None.
 def opening_date(night: date, rule: Rule) -> date | None:
@@ -128,8 +119,6 @@ def opening_date(night: date, rule: Rule) -> date | None:
     if rule.window_type == "fixed_date":
         return rule.opens_on
     return None
-
-# Neils [TBD]： then delete thses months_before and opening_date functions below.:
 
 
 def opening_time(night: date, rule: Rule) -> datetime | None:
