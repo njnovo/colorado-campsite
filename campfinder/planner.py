@@ -108,7 +108,7 @@ def rule_for(source, source_id, reservable=True, rules=None):
 #    """Same day-of-month `months` earlier, clamped to the end of a shorter month."""
 
 def months_before(day: date, months: int) -> date:
-    day_in_months = day.year * 12 + day.month
+    day_in_months = day.year * 12 + day.month -1
     new_day_in_months = day_in_months - months
     new_day = date(new_day_in_months // 12, new_day_in_months % 12 + 1, min(day.day, calendar.monthrange(new_day_in_months // 12, new_day_in_months % 12 + 1)[1]))
     return new_day
