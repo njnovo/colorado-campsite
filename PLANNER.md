@@ -138,7 +138,7 @@ backups(conn, campground_id, checkin, checkout, radius_mi=30, limit=5) -> list
 
 Done: the live-availability code, watchlist, scheduler, demo data and availability tables were removed.
 
-The repo still contains live-availability code that's switched off: `adapters/recgov.py`, the watchlist, `scheduler.py`, and the "Check live availability now" button. It goes against Recreation.gov's robots.txt and isn't part of the new pitch. Consider deleting it, or at least mention in the README that it's disabled, so the repo matches the story.
+That code (`adapters/recgov.py`, the watchlist, `scheduler.py` and the "Check live availability now" button) went against Recreation.gov's robots.txt and wasn't part of the new pitch. The README's "No availability data" section explains the removal, so the repo matches the story.
 
 ---
 
