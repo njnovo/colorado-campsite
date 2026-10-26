@@ -103,22 +103,16 @@ def months_before(day: date, months: int) -> date:
     new_day = date(new_day_in_months // 12, new_day_in_months % 12 + 1, min(day.day, calendar.monthrange(new_day_in_months // 12, new_day_in_months % 12 + 1)[1]))
     return new_day
 
-# - opening_date(night, rule) looks at rule.window_type:
-#   - "rolling_months": go back rule.window_amount months from night (calls months_before).
-#   - "rolling_days": go back rule.window_amount days.
-#   - "fixed_date": always return rule.opens_on.
-#   - anything else (first-come or lottery): return None.
-# - For going back days, timedelta(days=...) is already imported.
-# opening_date: one if for each rule.window_type: 
-# "rolling_months", "rolling_days", "fixed_date", else None.
-def opening_date(night: date, rule: Rule) -> date | None:
+
+def opening_date(night_date: date, rule: Rule) -> date | None:
     if rule.window_type == "rolling_months":
-        return months_before(night, rule.window_amount)
-    if rule.window_type == "rolling_days":
-        return night - timedelta(days=rule.window_amount)
-    if rule.window_type == "fixed_date":
+        return months_before(night_date, rule.window_amount)
+    elif rule.window_type == "rolling_days":
+        return night_date - timedelta(days=rule.window_amount)
+    elif rule.window_type == "fixed_date":
         return rule.opens_on
-    return None
+    else:
+        return None
 
 
 def opening_time(night: date, rule: Rule) -> datetime | None:
